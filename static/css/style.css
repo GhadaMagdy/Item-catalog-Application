@@ -1,0 +1,34 @@
+body{
+    background-color: #bea694;
+}
+header{
+    background-color: #7c9d45;
+    color: #351930;
+    padding: 15px 30px;
+    display: flex;
+    flex-direction: row
+}
+header h1{
+    margin:0;
+    width:90%;
+}
+header .login,
+.login:active,
+.login:focus
+.login:hover{
+    background-color: #566427;
+    padding: 10px 20px;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+}
+.page-body {
+    background: #fff;
+    padding: 15px 30px;
+    margin-top: 20px;
+    
+}
+.body-title{
+    color:#351930;
+}

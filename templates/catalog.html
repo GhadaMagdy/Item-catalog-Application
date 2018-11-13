@@ -1,0 +1,46 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+
+</head>
+
+<body>
+    <header>
+        <h1 class="app-title">Catalog</h1>
+        <a href="login.html" class="login">Login</a>
+    </header>
+    <div class="container">
+        <div class="page-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <a href="{{url_for('newItem')}}">
+                        <h3>Create new item</h3>
+                    </a>
+
+                </div>
+                <div class=col-md-12>
+                    <h2 class="body-title">Categories</h2>
+                    <div class="category-list">
+                        {% for category in categories %}
+
+                        <div class="category">
+                            <a href="{{url_for('catgoryItems', category_id = category.id)}}">
+                                <h3>{{category.name}}</h3>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>
