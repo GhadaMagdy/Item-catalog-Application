@@ -17,6 +17,14 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+# login
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in range(32))
+    login_session['state'] = state
+    return render_template('login.html',STATE=state)
+
 #Get all gategories in cataloh
 @app.route('/')
 @app.route('/catalog/')
@@ -104,5 +112,7 @@ def categoryItemjson(category_name,item_name):
     return jsonify(CategoryItem=[item.serialize])
 
 if __name__ == '__main__':
+    app.secret_key = 'super secret key'
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.debug = True
     app.run(host='0.0.0.0', port=9874)
