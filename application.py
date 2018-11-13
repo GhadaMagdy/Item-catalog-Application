@@ -76,17 +76,21 @@ def deleteItem(category_id,item_id):
 
 
 
-@app.route('/catalog/JSON')
-def categoriesjson():
-    return "categories in json"
+@app.route('/catalog/categories/JSON')
+def catalogjson():
+    categories=session.query(Category).all()
+    return jsonify(Categories=[c.serialize for c in categories])
 
-@app.route('/catalog/categories/<int:category_id>/JSON')
-def categoryItemsjson(category_id):
-    return "items in category json"  
+@app.route('/catalog/categories/<string:category_name>/items/JSON')
+def categoryItemsjson(category_name):
+    category=session.query(Category).filter_by(name=category_name).one()
+    items=session.query(CategoryItem).filter_by(category_id=category.id)
+    return jsonify(CategoryItems=[i.serialize for i in items]) 
 
-@app.route('/catalog/categories/<int:category_id>/items/<int:item_id>/JSON')
-def categoryItemjson(category_id,item_id):
-    return "item  json" 
+@app.route('/catalog/categories/<string:category_name>/items/<string:item_name>/JSON')
+def categoryItemjson(category_name,item_name):
+    item=session.query(CategoryItem).filter_by(name=item_name).one()
+    return jsonify(CategoryItem=[item.serialize])
 
 if __name__ == '__main__':
     app.debug = True
