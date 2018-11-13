@@ -18,20 +18,20 @@
         <div class="page-body">
             <div class="row">
                 <div class=col-md-12>
-                        <h1>New category Item</h1>
+                        <h1>Edit {{item.name}}</h1>
 
                         <div class = 'pane'>
-                        <form action="{{ url_for('editItem', category_id=category_id,item_id=item_id )}}" method = 'post'>
+                        <form action="{{ url_for('editItem', category_id=category_id,item_id=item.id )}}" method = 'post'>
                         
                         <dl>
                             <dt>Name:</dt>
                                 <dd><input type ='text' size='30' name='name' class="form-control" placeholder="{{item.name}}"></dd>
                             <dt>Description:</dt>
-                                <dd><textarea name = 'description' rows='5' cols='40' class="form-control" placeholder="{{item.discription}}" > </textarea></dd>
+                                <dd><textarea name = 'description' rows='5' cols='40' class="form-control" placeholder="{{item.description}}" > </textarea></dd>
                             <dt>Category</dt>
                             <select name="category" class="form-control">
                             {% for category in categories %}
-                                <option>{{category.name}}</option>
+                                <option value="{{category.name}}"{% if category_id==category.id %} selected="selected"{% endif %}>{{category.name}}</option>
                             {% endfor %}
                             
 
@@ -43,7 +43,7 @@
                         </dl>
                         
                         
-                        <input type='submit' value='Create'>
+                        <input type='submit' value='Edit'>
                         
                         </form>
                         </div>
