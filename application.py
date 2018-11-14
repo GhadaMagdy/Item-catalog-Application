@@ -207,6 +207,11 @@ def showLogin():
 @app.route('/')
 @app.route('/catalog/')
 def catalog():
+    # del login_session['access_token']
+    # del login_session['gplus_id']
+    # del login_session['username']
+    # del login_session['email']
+    # del login_session['picture']
     categories=session.query(Category).all()
     return render_template('catalog.html', categories=categories)
 
@@ -297,6 +302,17 @@ def categoryItemsjson(category_name):
 def categoryItemjson(category_name,item_name):
     item=session.query(CategoryItem).filter_by(name=item_name).one()
     return jsonify(CategoryItem=[item.serialize])
+
+# disconnect from the login session
+@app.route('/disconnect')
+def disconnect():
+    if 'username' in login_session:
+        gdisconnect()
+        flash("You have successfully been logged out.")
+        return redirect(url_for('showCatalog'))
+    else:
+        flash("You were not logged in")
+        return redirect(url_for('showCatalog'))
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
