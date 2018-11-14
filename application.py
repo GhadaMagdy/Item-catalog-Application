@@ -223,8 +223,7 @@ def catgoryItems(category_id):
 def item(category_id,item_id):
     item=session.query(CategoryItem).filter_by(id=item_id).one()
     category=session.query(Category).filter_by(id=category_id).one()
-    creator = getUserInfo(category.user_id)
-    if 'username' not in login_session or creator.id != login_session['user_id']:
+    if 'username' not in login_session or item.user_id != login_session['user_id']:
         return render_template('publicCatalogItem.html', item=item,category_id=category_id)    
     else:
         user = getUserInfo(login_session['user_id'])
@@ -233,9 +232,9 @@ def item(category_id,item_id):
 
 #Add new item
 @app.route('/catalog/items/new',methods=['GET', 'POST'])
+@login_required
 def newItem():
-    if 'username' not in login_session:
-        return redirect('/login')
+    
     if request.method == 'POST':
         selectedCategory=request.form['category']
         category=session.query(Category).filter_by(name=selectedCategory).one()
