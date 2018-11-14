@@ -32,3 +32,9 @@ header .login,
 .body-title{
     color:#351930;
 }
+.nav a{
+    color:#351930;
+}
+input.btn.btn-primary {
+    margin-top: 10px;
+}

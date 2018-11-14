@@ -17,6 +17,7 @@ import httplib2
 import json
 from flask import make_response
 import requests
+from login_decorator import login_required
 
 app = Flask(__name__)
 CLIENT_ID = json.loads(
@@ -101,6 +102,12 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    user_id=getUserID(login_session['email'])
+    if not user_id:
+        user_id=createUser(login_session)
+    login_session['user_id'] = user_id
+    
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -112,6 +119,29 @@ def gconnect():
     print ("done!")
     return output
 
+
+
+# User Helper Functions
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session[
+                   'email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        return user.id
+    except:
+        return None
 
 @app.route('/gdisconnect')
 def gdisconnect():
@@ -137,7 +167,7 @@ def gdisconnect():
         del login_session['picture']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        return response
+        return render_template('catalog.html')
     else:
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
@@ -149,6 +179,8 @@ def showLogin():
                     for x in range(32))
     login_session['state'] = state
     return render_template('login.html',STATE=state)
+
+
 
 #Get all gategories in cataloh
 @app.route('/')
@@ -169,7 +201,14 @@ def catgoryItems(category_id):
 @app.route('/catalog/categories/<int:category_id>/items/<int:item_id>')
 def item(category_id,item_id):
     item=session.query(CategoryItem).filter_by(id=item_id).one()
-    return render_template('catalogitem.html', item=item,category_id=category_id)    
+    category=session.query(Category).filter_by(id=category_id).one()
+    creator = getUserInfo(category.user_id)
+    if 'username' not in login_session or creator.id != login_session['user_id']:
+        return render_template('publicCatalogItem.html', item=item,category_id=category_id)    
+    else:
+        user = getUserInfo(login_session['user_id'])
+        return render_template('catalogitem.html', item=item,category_id=category_id) 
+   
 
 #Add new item
 @app.route('/catalog/items/new',methods=['GET', 'POST'])

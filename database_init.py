@@ -34,17 +34,17 @@ User1 = User(name="Nada Baynom",
 session.add(User1)
 session.commit()
 
-## User2 = User(name="Renado Gress",
-##               email="rgress1@t.co",
-##               picture='http://dummyimage.com/200x200.png/cc0000/ffffff')
-## session.add(User2)
-## session.commit()
+User2 = User(name="Renado Gress",
+              email="rgress1@t.co",
+              picture='http://dummyimage.com/200x200.png/cc0000/ffffff')
+session.add(User2)
+session.commit()
 
-## User3 = User(name="Prinz Blakemore",
-##               email="pblakemore2@bluehost.com",
-##               picture='http://dummyimage.com/200x200.png/5fa2dd/ffffff')
-## session.add(User3)
-## session.commit()
+User3 = User(name="Prinz Blakemore",
+              email="pblakemore2@bluehost.com",
+              picture='http://dummyimage.com/200x200.png/5fa2dd/ffffff')
+session.add(User3)
+session.commit()
 
 ## User4 = User(name="Ev Beetham",
 ##               email="ebeetham3@google.com.au",

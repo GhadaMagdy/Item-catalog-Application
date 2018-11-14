@@ -1,20 +1,8 @@
-<html>
 
-<head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/jquery-1.11.2.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+{% extends "main.html" %}
+{% include "header.html" %}
+{% block content %}
 
-</head>
-
-<body>
-    <header>
-        <h1 class="app-title">Catalog</h1>
-        <a href="{{url_for('showLogin')}}" class="login">Login</a>
-    </header>
-    <div class="container">
-        <div class="page-body">
             <div class="row">
                 <div class="col-md-12">
                     <a href="{{url_for('newItem')}}">
@@ -37,10 +25,6 @@
 
                 </div>
             </div>
+{% endblock content %}
 
-        </div>
-    </div>
-
-</body>
-
-</html>
+       
