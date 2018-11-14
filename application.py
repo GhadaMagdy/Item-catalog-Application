@@ -33,6 +33,7 @@ session = DBSession()
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
+    print(request.args.get('state'))
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -53,6 +54,7 @@ def gconnect():
 
     # Check that the access token is valid.
     access_token = credentials.access_token
+    print('accesssss  ',access_token)
     url = ('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=%s'
            % access_token)
     h = httplib2.Http()
@@ -120,6 +122,24 @@ def gconnect():
     return output
 
 
+@app.route('/localLogin', methods=['POST'])
+def localAuthorize():
+    if request.args.get('state') != login_session['state']:
+        response = make_response(json.dumps('Invalid state parameter.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    # Obtain authorization code
+    code = request.data
+    email=request.form['email']
+    user_id=getUserID(email)
+    if not user_id:
+        user_id=createUser(login_session)
+    login_session['user_id'] = user_id
+    login_session['username'] =request.form['userName'] 
+
+    return redirect(url_for('catalog'))
+
+
 
 # User Helper Functions
 def createUser(login_session):
@@ -167,11 +187,12 @@ def gdisconnect():
         del login_session['picture']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        return render_template('catalog.html')
+        return redirect(url_for('catalog'))
     else:
         response = make_response(json.dumps('Failed to revoke token for given user.', 400))
         response.headers['Content-Type'] = 'application/json'
         return response
+
 # login
 @app.route('/login')
 def showLogin():
@@ -218,8 +239,9 @@ def newItem():
     if request.method == 'POST':
         selectedCategory=request.form['category']
         category=session.query(Category).filter_by(name=selectedCategory).one()
+        user_id=login_session['user_id']
         newItem = CategoryItem(
-            name=request.form['name'], category_id=category.id,description=request.form['description'])
+            name=request.form['name'], category_id=category.id,description=request.form['description'],user_id=user_id)
         session.add(newItem)
         session.commit()
         return redirect(url_for('catgoryItems', category_id=category.id))

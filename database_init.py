@@ -106,5 +106,11 @@ Item3 = CategoryItem(name="Football",
                user_id=1)
 session.add(Item3)
 session.commit()
+Item4 = CategoryItem(name="BMW",
+               description="car",
+               category_id=2,
+               user_id=2)
+session.add(Item4)
+session.commit()
 
 print ("Your database has been populated with fake data!")
