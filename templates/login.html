@@ -16,7 +16,7 @@
 <body>
     <header>
         <h1 class="app-title">Catalog</h1>
-        <a href="login.html" class="login">Login</a>
+        <a href="{{url_for('showLogin')}}" class="login">Login</a>
     </header>
     <div class="container">
         <div class="page-body">
@@ -26,9 +26,14 @@
 
 
                     <div id="signinButton">
-                        <span class="g-signin" data-scope="openid email" data-clientid="803326043539-sr7nfnrfs3fn8afnr3uufvt3l8lnk0rt.apps.googleusercontent.com"
-                            data-redirecturi="postmessage" data-accesstype="offline" data-cookiepolicy="single_host_origin"
-                            data-callback="signInCallback" data-approvalprompt="force">
+                        <span class="g-signin" 
+                        data-scope="openid email" 
+                        data-clientid="803326043539-sr7nfnrfs3fn8afnr3uufvt3l8lnk0rt.apps.googleusercontent.com"
+                            data-redirecturi="postmessage" 
+                            data-accesstype="offline" 
+                            data-cookiepolicy="single_host_origin"
+                            data-callback="signInCallback" 
+                            data-approvalprompt="force">
                         </span>
                     </div>
                     <!--END GOOGLE PLUS SIGN IN BUTTON -->
