@@ -165,61 +165,74 @@ def getUserID(email):
 
 @app.route('/gdisconnect')
 def gdisconnect():
-    access_token = login_session['access_token']
+    access_token = login_session.get('access_token')
     if access_token is None:
         print ('Access Token is None')
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
+    print ('In gdisconnect access token is %s', access_token)
+    print ('User name is: ')
+    print (login_session['username'])
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    if result['status'] != '200':
-        response = make_response(
-        json.dumps('Failed to revoke token for given user.', 400))
+    print ('result is ')
+    print (result['status'])
+    if result['status'] == '200':
+        del login_session['access_token']
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    # login
-    @app.route('/login')
-    def showLogin():
-        state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                        for x in range(32))
-        login_session['state'] = state
-        return render_template('login.html',STATE=state)
+# login
+@app.route('/login')
+def showLogin():
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in range(32))
+    login_session['state'] = state
+    return render_template('login.html',STATE=state)
 
 
 
-    #Get all gategories in cataloh
-    @app.route('/')
-    @app.route('/catalog/')
-    def catalog():
-        # del login_session['access_token']
-        # del login_session['gplus_id']
-        # del login_session['username']
-        # del login_session['email']
-        # del login_session['picture']
-        categories=session.query(Category).all()
-        return render_template('catalog.html', categories=categories)
+#Get all gategories in cataloh
+@app.route('/')
+@app.route('/catalog/')
+def catalog():
+    # del login_session['access_token']
+    # del login_session['gplus_id']
+    # del login_session['username']
+    # del login_session['email']
+    # del login_session['picture']
+    categories=session.query(Category).all()
+    return render_template('catalog.html', categories=categories)
 
 
-    #Get all items in specific category
-    @app.route('/catalog/categories/<int:category_id>')
-    def catgoryItems(category_id):
-        items=session.query(CategoryItem).filter_by(category_id=category_id)
-        category=session.query(Category).filter_by(id=category_id).one()
-        return render_template('catalogItems.html', items=items,category=category)    
+#Get all items in specific category
+@app.route('/catalog/categories/<int:category_id>')
+def catgoryItems(category_id):
+    items=session.query(CategoryItem).filter_by(category_id=category_id)
+    category=session.query(Category).filter_by(id=category_id).one()
+    return render_template('catalogItems.html', items=items,category=category)    
 
-    #Get item information
-    @app.route('/catalog/categories/<int:category_id>/items/<int:item_id>')
-    def item(category_id,item_id):
-        item=session.query(CategoryItem).filter_by(id=item_id).one()
-        category=session.query(Category).filter_by(id=category_id).one()
-        if 'username' not in login_session or item.user_id != login_session['user_id']:
-            return render_template('publicCatalogItem.html', item=item,category_id=category_id)    
-        else:
-            user = getUserInfo(login_session['user_id'])
-            return render_template('catalogitem.html', item=item,category_id=category_id) 
+#Get item information
+@app.route('/catalog/categories/<int:category_id>/items/<int:item_id>')
+def item(category_id,item_id):
+    item=session.query(CategoryItem).filter_by(id=item_id).one()
+    category=session.query(Category).filter_by(id=category_id).one()
+    if 'username' not in login_session or item.user_id != login_session['user_id']:
+        return render_template('publicCatalogItem.html', item=item,category_id=category_id)    
+    else:
+        user = getUserInfo(login_session['user_id'])
+        return render_template('catalogitem.html', item=item,category_id=category_id) 
    
 
 #Add new item
@@ -295,11 +308,6 @@ def categoryItemjson(category_name,item_name):
 def disconnect():
     if 'username' in login_session:
         gdisconnect()
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
-        del login_session['user_id']
-
         flash("You have successfully been logged out.")
         return redirect(url_for('catalog'))
     else:
@@ -310,4 +318,4 @@ if __name__ == '__main__':
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.debug = True
-    app.run(host='0.0.0.0', port=9974)
+    app.run(host='0.0.0.0', port=9874)
