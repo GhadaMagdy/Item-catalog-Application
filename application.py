@@ -171,14 +171,14 @@ def gdisconnect():
         response = make_response(json.dumps('Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    print( 'In gdisconnect access token is %s', access_token)
+    print ('In gdisconnect access token is %s', access_token)
     print ('User name is: ')
     print (login_session['username'])
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print ('result is ')
-    print (result)
+    print (result['status'])
     if result['status'] == '200':
         del login_session['access_token']
         del login_session['gplus_id']
@@ -187,9 +187,9 @@ def gdisconnect():
         del login_session['picture']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
-        return redirect(url_for('catalog'))
+        return response
     else:
-        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response = make_response(json.dumps('Failed to revoke token for given user.'), 400)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -317,10 +317,10 @@ def disconnect():
     if 'username' in login_session:
         gdisconnect()
         flash("You have successfully been logged out.")
-        return redirect(url_for('showCatalog'))
+        return redirect(url_for('catalog'))
     else:
         flash("You were not logged in")
-        return redirect(url_for('showCatalog'))
+        return redirect(url_for('catalog'))
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
