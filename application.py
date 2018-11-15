@@ -255,17 +255,21 @@ def newItem():
 
 #Edit Item
 @app.route('/catalog/categories/<int:category_id>/items/<int:item_id>/edit',methods=['GET', 'POST'])
+@login_required
 def editItem(category_id,item_id):
     if request.method == 'POST':
         item=session.query(CategoryItem).filter_by(id=item_id).one()
         selectedCategory=request.form['category']
         category=session.query(Category).filter_by(name=selectedCategory).one()
-        item.name=request.form['name']
-        item.category_id=category.id
-        item.description=request.form['description']
-        session.add(item)
-        session.commit()
-        return redirect(url_for('item', category_id=category_id,item_id=item_id))
+        if(item.user_id==login_session['user_id']):
+            item.name=request.form['name']
+            item.category_id=category.id
+            item.description=request.form['description']
+            session.add(item)
+            session.commit()
+            return redirect(url_for('item', category_id=category_id,item_id=item_id))
+        else:
+            flash("you not allowed to edit this item")
     else:
         categories=session.query(Category).all()
         item=session.query(CategoryItem).filter_by(id=item_id).one()
@@ -276,9 +280,13 @@ def editItem(category_id,item_id):
 def deleteItem(category_id,item_id):
     if request.method == 'POST':
         item=session.query(CategoryItem).filter_by(id=item_id).one()
-        session.delete(item)
-        session.commit()
-        return redirect(url_for('catgoryItems', category_id=category_id))
+        if(item.user_id==login_session['user_id']):
+            session.delete(item)
+            session.commit()
+            return redirect(url_for('catgoryItems', category_id=category_id))
+        else:
+            flash("you not allowed to delete this item")
+
     else:
         item=session.query(CategoryItem).filter_by(id=item_id).one()
         return render_template('deleteCatalogItem.html',item=item,category_id=category_id)

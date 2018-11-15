@@ -9,18 +9,18 @@ from sqlalchemy import create_engine
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'user'
-
-    id = Column(Integer, primary_key = True)
-    name = Column(String(250), nullable = False)
-    email = Column(String(250), nullable = False)
+    id = Column(Integer, primary_key=True)
+    name = Column(String(250), nullable=False)
+    email = Column(String(250), nullable=False)
     picture = Column(String(250))
+
 
 # class is a table in db
 class Category(Base):
     __tablename__ = 'category'
-    #the below fields are the mapper to columns in table
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     user_id = Column(Integer, ForeignKey('user.id'))
@@ -34,6 +34,7 @@ class Category(Base):
                 'id': self.id,
             }
 
+
 class CategoryItem(Base):
     __tablename__ = 'category_item'
 
@@ -41,11 +42,15 @@ class CategoryItem(Base):
     id = Column(Integer, primary_key=True)
     description = Column(String(250))
     category_id = Column(Integer, ForeignKey('category.id'))
-    category = relationship(Category)
+    category = relationship(
+        Category,
+        backref=backref('category_item', cascade='all, delete')
+    )
     user_id = Column(Integer, ForeignKey('user.id'))
-    user = relationship(User, backref="items")
+    user = relationship(User, backref="category_item")
     # We added this serialize function to be able to send JSON objects in a
     # serializable format
+
     @property
     def serialize(self):
 
