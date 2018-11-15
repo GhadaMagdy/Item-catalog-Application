@@ -8,7 +8,7 @@ from database_setup import Base, Category, CategoryItem, User
 from sqlalchemy.pool import SingletonThreadPool, NullPool,StaticPool
 
 from flask import session as login_session
-import random
+import random, time
 import string
 
 from oauth2client.client import flow_from_clientsecrets
@@ -244,11 +244,16 @@ def newItem():
         selectedCategory=request.form['category']
         category=session.query(Category).filter_by(name=selectedCategory).one()
         user_id=login_session['user_id']
-        newItem = CategoryItem(
-            name=request.form['name'], category_id=category.id,description=request.form['description'],user_id=user_id)
-        session.add(newItem)
-        session.commit()
-        return redirect(url_for('catgoryItems', category_id=category.id))
+        if selectedCategory and request.form['name'] and request.form['description']:
+            newItem = CategoryItem(
+                name=request.form['name'], category_id=category.id,description=request.form['description'],user_id=user_id)
+            session.add(newItem)
+            session.commit()
+            return redirect(url_for('catgoryItems', category_id=category.id))
+        else:
+            flash("you should fill all fields")
+            time.sleep(1000)
+            return redirect(url_for('newItem'))
     else:
         categories=session.query(Category).all()
         return render_template('newItem.html', categories=categories)
@@ -270,6 +275,7 @@ def editItem(category_id,item_id):
             return redirect(url_for('item', category_id=category_id,item_id=item_id))
         else:
             flash("you not allowed to edit this item")
+            return redirect(url_for('item', category_id=category_id,item_id=item_id))
     else:
         categories=session.query(Category).all()
         item=session.query(CategoryItem).filter_by(id=item_id).one()
@@ -286,7 +292,7 @@ def deleteItem(category_id,item_id):
             return redirect(url_for('catgoryItems', category_id=category_id))
         else:
             flash("you not allowed to delete this item")
-
+            return redirect(url_for('item', category_id=category_id,item_id=item_id))
     else:
         item=session.query(CategoryItem).filter_by(id=item_id).one()
         return render_template('deleteCatalogItem.html',item=item,category_id=category_id)

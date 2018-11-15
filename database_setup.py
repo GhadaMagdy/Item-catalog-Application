@@ -44,7 +44,7 @@ class CategoryItem(Base):
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(
         Category,
-        backref=backref('category_item', cascade='all, delete')
+        backref='category_item'
     )
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User, backref="category_item")
